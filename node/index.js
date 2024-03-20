@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const windowSize = 10;
+const axios = require("axios")
 
 app.use(express.json());
 
@@ -29,7 +30,7 @@ function calculateAverage(numbers) {
 }
 
 // Define the route for the API
-app.get("/numbers/:numberid", (req, res) => {
+app.get("/numbers/:numberid", async (req, res) => {
   // Parse the number ID from the request parameters
   const numberId = req.params.numberid;
 
@@ -37,31 +38,20 @@ app.get("/numbers/:numberid", (req, res) => {
   let numbers = [];
   switch (numberId) {
     case "p":
-      // Generate a list of prime numbers
-      for (let i = 2; i < 100; i++) {
-        if (isPrime(i)) {
-          numbers.push(i);
-        }
-      }
+      result = await axios.get("http://20.244.56.144/numbers/primes")
+      numbers = result.data.numbers
       break;
     case "f":
-      // Generate a list of Fibonacci numbers
-      numbers = [0, 1];
-      for (let i = 2; i < 10; i++) {
-        numbers.push(numbers[i - 2] + numbers[i - 1]);
-      }
+      result = await axios.get("http://20.244.56.144/numbers/fibo")
+      numbers = result.data.numbers
       break;
     case "e":
-      // Generate a list of even numbers
-      for (let i = 2; i < 100; i += 2) {
-        numbers.push(i);
-      }
+      result = await axios.get("http://20.244.56.144/numbers/even")
+      numbers = result.data.numbers
       break;
     case "r":
-      // Generate a list of random numbers
-      for (let i = 0; i < 10; i++) {
-        numbers.push(Math.floor(Math.random() * 100));
-      }
+      result = await axios.get("http://20.244.56.144/numbers/rand")
+      numbers = result.data.numbers
       break;
     default:
       return res.status(400).json({ error: "Invalid number ID" });
@@ -111,3 +101,4 @@ function isPrime(num) {
 app.listen(port, () => {
   console.log(`Server listening on port ${port}.`);
 });
+
